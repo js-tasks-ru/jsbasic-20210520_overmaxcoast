@@ -1,3 +1,9 @@
 function isEmpty(obj) {
-  // ваш код...
+  let indicateProps;
+  
+  for (let k in obj) {
+    indicateProps = true;
+  }
+  
+  return !indicateProps;
 }
