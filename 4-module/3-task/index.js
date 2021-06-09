@@ -1,13 +1,16 @@
 function highlight(table) {
-  let cell;
-  let row;
-  
-  for (let i = 0; i < table.rows.length; i++) {
-    row = table.rows[i]
-    cell = a => row.cells[a];
+  for (let row of table.rows) {
     
-    cell(1).innerHTML < 18 ? row.setAttribute('style', 'text-decoration: line-through') : null;
-    cell(2).innerHTML === 'm' ? row.classList.add('male') : row.classList.add('female');
-    cell(3).dataset.available === 'true' ? row.classList.add('available') : ( row.classList.add('unavailable'), row.setAttribute('hidden', true) );
+    row.cells[1].innerHTML < 18 
+      ? row.setAttribute('style', 'text-decoration: line-through')
+      : null;
+      
+    row.cells[2].innerHTML === 'm'
+      ? row.classList.add('male')
+      : row.classList.add('female');
+      
+    row.cells[3].dataset.available === 'true'
+      ? row.classList.add('available')
+      : ( row.classList.add('unavailable'), row.setAttribute('hidden', true) );
   }
 }
