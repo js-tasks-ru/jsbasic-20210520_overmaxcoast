@@ -3,20 +3,20 @@ import createElement from '../../assets/lib/create-element.js';
 export default class RibbonMenu {
   
   constructor(categories) {
-    this._categories = categories;
-    this._shift = 350;
+    this.categories = categories;
+    this.shift = 350;
     
     this.elem = document.createElement('div');
     this.elem.classList.add('ribbon');
     this.elem.innerHTML = 
-      this._layoutRibbonArrow('left') + 
-      this._layoutCategories() + 
-      this._layoutRibbonArrow('right'); 
+      this.layoutRibbonArrow('left') + 
+      this.layoutCategories() + 
+      this.layoutRibbonArrow('right'); 
       
-    this._initRibbon();
+    this.initRibbon();
   }
   
-  _layoutRibbonArrow(way) {
+  layoutRibbonArrow(way) {
     return `
       <button class="ribbon__arrow ribbon__arrow_${ way }">
         <img src="/assets/images/icons/angle-icon.svg" alt="icon">
@@ -24,74 +24,71 @@ export default class RibbonMenu {
     `;
   }
   
-  _layoutCategories() {
-    let aList = this._categories
+  layoutCategories() {
+    let aList = this.categories
       .map( item => `<a href="#" class="ribbon__item" data-id="${ item.id }">${ item.name }</a>` )
       .join('');
     return '<nav class="ribbon__inner">' + aList + '</nav>';
   }
   
-  _ribbon = suffix => this.elem.querySelector(`.ribbon__${suffix}`);
+  ribbonSub = suffix => this.elem.querySelector(`.ribbon__${suffix}`);
   
-  _initRibbon() {
-    this._ribbon('arrow_right').classList.add('ribbon__arrow_visible');
-    this.elem.addEventListener('click', this._onClickEvent);
+  initRibbon() {
+    this.ribbonSub('arrow_right').classList.add('ribbon__arrow_visible');
+    this.elem.addEventListener('click', this.onClickEvent);
   }
   
-  _onClickEvent = event => {
-    const aim = event.target;
+  onClickEvent = ({target}) => {
+    if ( target.closest('.ribbon__item') )
+      this.clickOnItem( target );
     
-    if ( aim.classList.contains('ribbon__item') )
-      this._clickOnItem( aim );
+    if ( target.closest('.ribbon__arrow_left') )
+      this.clickOnArrow( -1 );
     
-    if ( aim.classList.contains('ribbon__arrow_left') )
-      this._clickOnArrow( -1 );
-    
-    if ( aim.classList.contains('ribbon__arrow_right') )
-      this._clickOnArrow( 1 );
+    if ( target.closest('.ribbon__arrow_right') )
+      this.clickOnArrow( 1 );
   }
   
-  _clickOnItem = (aimNew) => {
+  clickOnItem = (aimNew) => {
     event.preventDefault();
     
-    const aimOld = this._ribbon('item_active');
+    const aimOld = this.ribbonSub('item_active');
     
     if ( aimOld !== aimNew ) {
       if ( aimOld !== null )
         aimOld.classList.remove('ribbon__item_active');
       aimNew.classList.add('ribbon__item_active');
       
-      this._dispatchCustomEvent(aimNew);
+      this.ribbonSelectedEvent(aimNew);
     }
   }
   
-  _clickOnArrow = multiplier => {
-    const shift = this._shift;
+  clickOnArrow = multiplier => {
+    const shift = this.shift;
     const arrowStyleSwitch = (scroll, mul, way) => {
       if ( scroll + ( mul * shift ) <= 1 ) {
-        this._ribbon(`arrow_${way}`).classList.remove('ribbon__arrow_visible');
+        this.ribbonSub(`arrow_${way}`).classList.remove('ribbon__arrow_visible');
       } else {
-        this._ribbon(`arrow_${way}`).classList.add('ribbon__arrow_visible');
+        this.ribbonSub(`arrow_${way}`).classList.add('ribbon__arrow_visible');
       }
     }
     let menuWidth = 
-      this._ribbon('inner').scrollWidth -
-      this._ribbon('inner').clientWidth;
+      this.ribbonSub('inner').scrollWidth -
+      this.ribbonSub('inner').clientWidth;
     
-    let scrollLeft = this._ribbon('inner').scrollLeft;
+    let scrollLeft = this.ribbonSub('inner').scrollLeft;
     let scrollRight = menuWidth - scrollLeft;
     
-    arrowStyleSwitch(scrollLeft, multiplier, 'left');
-    arrowStyleSwitch(scrollRight, -multiplier, 'right');
+    arrowStyleSwitch( scrollLeft, multiplier, 'left' );
+    arrowStyleSwitch( scrollRight, -multiplier, 'right' );
     
-    this._ribbon('inner').scrollBy( shift * multiplier, 0 );
+    this.ribbonSub('inner').scrollBy( shift * multiplier, 0 );
   }
   
-  _dispatchCustomEvent = aim => {
-    const itemChosen = new CustomEvent('ribbon-select', {
+  ribbonSelectedEvent = aim => {
+    this.elem.dispatchEvent( new CustomEvent('ribbon-select', {
       detail: aim.dataset.id,
       bubbles: true
-    });
-    this.elem.dispatchEvent(itemChosen);
+    }));
   }
 }

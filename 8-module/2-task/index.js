@@ -2,6 +2,7 @@ import createElement from '../../assets/lib/create-element.js';
 import ProductCard from '../../6-module/2-task/index.js';
 
 export default class ProductGrid {
+  
   constructor(products) {
     this.products = products;
     this.filters = {};
@@ -29,15 +30,16 @@ export default class ProductGrid {
     }
     const grid = this.elem.querySelector('.products-grid__inner');
     
-    grid.innerHTML = 
-      this.products
-        .filter( product => caseLine(product) )
-        .map( product => new ProductCard(product).layout() )
-        .join('');
+    while( grid.firstChild )
+      grid.removeChild( grid.firstChild );
+    
+    this.products
+      .filter( product => caseLine(product) )
+      .forEach( product => grid.append( new ProductCard(product).elem ) );
   }
   
   updateFilter = filters => {
-    Object.assign(this.filters, filters);
+    Object.assign( this.filters, filters );
     this.layoutGrid();
   }
 }
