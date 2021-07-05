@@ -19,7 +19,7 @@ export default class Cart {
         product: product,
         count: 1
       });
-      this.onProductUpdate( this.cartItems[length - 1] );
+      this.onProductUpdate( this.cartItems[ length - 1 ] );
     }
   }
   
@@ -110,14 +110,13 @@ export default class Cart {
     this.modal.open();
   }
   
-  onProductCountButton = event => {
-    const aim = event.target;
-    
-    if ( aim.closest('.cart-counter__button') )
+  onProductCountButton = ({target}) => {
+    if ( target.closest('.cart-counter__button') ) {
       this.updateProductCount( 
-        aim.closest('[data-product-id]').dataset.productId, 
-        aim.closest('.cart-counter__button_minus') ? -1 : 1
+        target.closest('[data-product-id]').dataset.productId, 
+        target.closest('.cart-counter__button_minus') ? -1 : 1
       );
+    }
   }
   
   onProductUpdate = cartItem => {

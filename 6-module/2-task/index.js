@@ -4,13 +4,13 @@ export default class ProductCard {
   
   constructor(product) {
     this.product = product;
-    this.elem = createElement( this.layout() );
     
-    this.clickEvent();
+    this.elem = createElement( this.layout() );
+    this.elem.addEventListener('click', this.onClick)
   }
   
   layout() {
-    return `
+     return `
       <div class="card">
         <div class="card__top">
           <img src="/assets/images/products/${ this.product.image }" class="card__image" alt="product">
@@ -22,18 +22,15 @@ export default class ProductCard {
             <img src="/assets/images/icons/plus-icon.svg" alt="icon">
           </button>
         </div>
-      </div>
-    `;
+      </div>`;
   }
   
-  clickEvent() {
-    const addItemToCart = new CustomEvent('product-add', {
-      detail: this.product.id,
-      bubbles: true
-    });
-    this.elem.addEventListener('click', event => {
-      if (event.target.classList.contains('card__button'))
-        this.elem.dispatchEvent(addItemToCart);
-    });
+  onClick = ({target}) => {
+    if ( target.closest('.card__button') ) {
+      this.elem.dispatchEvent( new CustomEvent('product-add', {
+        detail: this.product.id,
+        bubbles: true
+      }));
+    }
   }
 }
